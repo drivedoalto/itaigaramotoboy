@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inserção de Dados</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        input[type="text"], input[type="time"], input[type="number"], select {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 5px 0 20px 0;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        input[type="checkbox"] {
+            margin-left: 10px;
+        }
+        input[type="submit"] {
+            width: 100%;
+            background-color: #4CAF50;
+            color: white;
+            padding: 14px 20px;
+            margin: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+        .row {
+            display: flex;
+            align-items: center;
+        }
+        .row label {
+            margin-right: 10px;
+        }
+        .row .input-container {
+            margin-left: 10px;
+        }
+        .input-container input, .input-container select {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+    <h2>Formulário de Inserção de Dados</h2>
+    <form id="dataForm">
+        <label for="colA">DATA:</label>
+        <input type="text" id="colA" name="colA" required>
+
+        <label for="colB">HORA COMANDA:</label>
+        <input type="time" id="colB" name="colB" required>
+
+        <label for="colC">HORA ENTREGA:</label>
+        <input type="time" id="colC" name="colC" required>
+
+        <label for="colD">MOTOBOY:</label>
+        <select id="colD" name="colD" required>
+            <option value="" selected disabled>Selecione um motoboy</option>
+        </select>
+
+        <div class="row">
+            <div class="input-container">
+                <label for="colE">COMANDA:</label>
+                <input type="text" id="colE" name="colE" required placeholder="Digite apenas números">
+            </div>
+            <div class="input-container">
+                <label for="colH">REENVIO:</label>
+                <input type="checkbox" id="colH" name="colH" value="SIM">
+            </div>
+        </div>
+
+        <label for="colF">BAIRRO:</label>
+        <select id="colF" name="colF" required>
+            <option value="" selected disabled>Selecione um bairro</option>
+        </select>
+
+        <label for="colG">LOJA:</label>
+        <select id="colG" name="colG" required>
+            <option value="" selected disabled>Selecione uma loja</option>
+        </select>
+
+        <input type="submit" value="Enviar">
+    </form>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize flatpickr for the date field
+            flatpickr("#colA", {
+                dateFormat: "d/m/Y",
+                defaultDate: new Date(),
+                locale: {
+                    firstDayOfWeek: 1
+                }
+            });
+
+            // Set current time for "HORA ENTREGA"
+            const timeInput = document.getElementById('colC');
+            const currentTime = new Date().toTimeString().split(' ')[0];
+            timeInput.value = currentTime.slice(0, 5);
+
+            // Fetch options for MOTOBOY, BAIRRO, and LOJA
+            fetch('https://script.google.com/macros/s/AKfycbwJRb43uLZ2rKpDUxFmaN2wLIh8uByOcFBpzKl0pbgWcxqT68s56_ITwnIF1t9wxgfO/exec?action=getOptions')
+            .then(response => response.json())
+            .then(data => {
+                console.log('Dados recebidos:', data); // Verifique os dados recebidos
+                const motoboySelect = document.getElementById('colD');
+                const bairroSelect = document.getElementById('colF');
+                const lojaSelect = document.getElementById('colG');
+                
+                if (data.motoboys) {
+                    data.motoboys.forEach(motoboy => {
+                        const option = document.createElement('option');
+                        option.value = motoboy;
+                        option.text = motoboy;
+                        motoboySelect.add(option);
+                    });
+                } else {
+                    console.error('Erro: Dados de motoboys não encontrados');
+                }
+
+                if (data.bairros) {
+                    data.bairros.forEach(bairro => {
+                        const option = document.createElement('option');
+                        option.value = bairro;
+                        option.text = bairro;
+                        bairroSelect.add(option);
+                    });
+                } else {
+                    console.error('Erro: Dados de bairros não encontrados');
+                }
+
+                if (data.lojas) {
+                    data.lojas.forEach(loja => {
+                        const option = document.createElement('option');
+                        option.value = loja;
+                        option.text = loja;
+                        lojaSelect.add(option);
+                    });
+                } else {
+                    console.error('Erro: Dados de lojas não encontrados');
+                }
+            })
+            .catch(error => {
+                console.error('Erro ao carregar opções:', error);
+            });
+        });
+
+        document.getElementById('dataForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+
+            // Validate "COMANDA" to ensure it contains only numbers
+            const comanda = formData.get('colE');
+            if (!/^\d+$/.test(comanda)) {
+                alert('O campo COMANDA deve conter apenas números.');
+                return;
+            }
+
+            // Ensure REENVIO is set to "NÃO" if not checked
+            if (!formData.has('colH')) {
+                formData.append('colH', 'NÃO');
+            }
+
+            // Format date from "dd/MM/yyyy" to "yyyy-MM-dd" for Google Sheets
+            const date = formData.get('colA').split('/');
+            const formattedDate = `${date[2]}-${date[1]}-${date[0]}`;
+            formData.set('colA', formattedDate);
+
+            fetch('https://script.google.com/macros/s/AKfycbwJRb43uLZ2rKpDUxFmaN2wLIh8uByOcFBpzKl0pbgWcxqT68s56_ITwnIF1t9wxgfO/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(result => {
+                alert('Dados inseridos com sucesso!');
+                event.target.reset();
+                document.getElementById('colA')._flatpickr.setDate(new Date()); // Reset date picker
+            })
+            .catch(error => {
+                console.error('Erro:', error);
+                alert('Erro ao inserir dados.');
+            });
+        });
+
+        // Validate input for COMANDA to accept only numbers
+        document.getElementById('colE').addEventListener('input', function(event) {
+            const value = event.target.value;
+            if (/[^0-9]/.test(value)) {
+                alert('O campo COMANDA só deve conter números.');
+                event.target.value = value.replace(/[^0-9]/g, ''); // Remove non-numeric characters
+            }
+        });
+    </script>
+</body>
+</html>

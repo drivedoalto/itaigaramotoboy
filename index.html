@@ -192,7 +192,7 @@
             timeInput.value = currentTime.slice(0, 5);
 
             // Fetch options for MOTOBOY, BAIRRO, and LOJA
-            fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=getOptions')
+            fetch('https://script.google.com/macros/s/AKfycby626CG2lA3RVCxtHaiNC802rQp2dw0wnPD9J5sPdVBbtlc-KvM6KrxEed2QnbYd_wW/exec?action=getOptions')
             .then(response => response.json())
             .then(data => {
                 console.log('Dados recebidos:', data); // Verifique os dados recebidos
@@ -251,7 +251,7 @@
                 const form = e.target;
                 const formData = new FormData(form);
 
-                fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=submitData', {
+                fetch('https://script.google.com/macros/s/AKfycby626CG2lA3RVCxtHaiNC802rQp2dw0wnPD9J5sPdVBbtlc-KvM6KrxEed2QnbYd_wW/exec?action=submitData', {
                     method: 'POST',
                     body: formData
                 })

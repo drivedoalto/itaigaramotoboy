@@ -109,6 +109,9 @@
             margin: 0;
             margin-right: 10px;
         }
+        .break-line {
+            margin: 10px 0; /* Espaçamento antes e depois da quebra de linha */
+        }
     </style>
 </head>
 <body>
@@ -117,10 +120,12 @@
     </div>
 
     <form id="dataForm">
-        <h2>Formulário de Inserção de Dados</h2>
+        <h2>Inserção de Dados</h2>
 
         <label for="colA">DATA:</label>
         <input type="text" id="colA" name="colA" required>
+
+        <div class="break-line"></div> <!-- Quebra de linha -->
 
         <label for="colB">HORA COMANDA:</label>
         <input type="time" id="colB" name="colB" required>
@@ -245,17 +250,15 @@
                         form.reset();
                         flatpickr("#colA", {
                             dateFormat: "d/m/Y",
-                            defaultDate: new Date(),
-                            locale: {
-                                firstDayOfWeek: 1
-                            }
+                            defaultDate: new Date()
                         });
+                        document.getElementById('colC').value = new Date().toTimeString().split(' ')[0].slice(0, 5);
                     } else {
-                        alert('Falha ao enviar os dados.');
+                        throw new Error('Falha ao enviar dados');
                     }
                 })
                 .catch(error => {
-                    console.error('Erro ao enviar os dados:', error);
+                    console.error('Erro ao enviar dados:', error);
                     alert('Ocorreu um erro ao enviar os dados.');
                 })
                 .finally(() => {

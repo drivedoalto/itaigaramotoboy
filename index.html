@@ -110,7 +110,14 @@
             margin-right: 10px;
         }
         .break-line {
-            margin: 0px 0; /* Espaçamento antes e depois da quebra de linha */
+            margin: 20px 0; /* Espaçamento antes e depois da quebra de linha */
+        }
+        .time-container {
+            display: flex;
+            gap: 10px; /* Espaço entre os campos de hora */
+        }
+        .time-container .input-container {
+            flex: 1;
         }
     </style>
 </head>
@@ -127,11 +134,16 @@
 
         <div class="break-line"></div> <!-- Quebra de linha -->
 
-        <label for="colB">HORA COMANDA:</label>
-        <input type="time" id="colB" name="colB" required>
-
-        <label for="colC">HORA ENTREGA:</label>
-        <input type="time" id="colC" name="colC" required>
+        <div class="time-container">
+            <div class="input-container">
+                <label for="colB">HORA COMANDA:</label>
+                <input type="time" id="colB" name="colB" required>
+            </div>
+            <div class="input-container">
+                <label for="colC">HORA ENTREGA:</label>
+                <input type="time" id="colC" name="colC" required>
+            </div>
+        </div>
 
         <label for="colD">MOTOBOY:</label>
         <select id="colD" name="colD" required>
@@ -180,7 +192,7 @@
             timeInput.value = currentTime.slice(0, 5);
 
             // Fetch options for MOTOBOY, BAIRRO, and LOJA
-            fetch('https://script.google.com/macros/s/AKfycby626CG2lA3RVCxtHaiNC802rQp2dw0wnPD9J5sPdVBbtlc-KvM6KrxEed2QnbYd_wW/exec?action=getOptions')
+            fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=getOptions')
             .then(response => response.json())
             .then(data => {
                 console.log('Dados recebidos:', data); // Verifique os dados recebidos
@@ -239,18 +251,21 @@
                 const form = e.target;
                 const formData = new FormData(form);
 
-                fetch('https://script.google.com/macros/s/AKfycby626CG2lA3RVCxtHaiNC802rQp2dw0wnPD9J5sPdVBbtlc-KvM6KrxEed2QnbYd_wW/exec', {
+                fetch('https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=submitData', {
                     method: 'POST',
-                    body: new URLSearchParams(formData)
+                    body: formData
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    } else {
+                        throw new Error('Falha ao enviar dados');
+                    }
+                })
+                .then(result => {
+                    if (result.success) {
                         alert('Dados enviados com sucesso!');
                         form.reset();
-                        flatpickr("#colA", {
-                            defaultDate: new Date()
-                        });
                         document.getElementById('colC').value = new Date().toTimeString().split(' ')[0].slice(0, 5);
                     } else {
                         throw new Error('Falha ao enviar dados');

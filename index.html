@@ -28,8 +28,8 @@
             position: relative;
             z-index: 1;
         }
-        input[type="text"], input[type="time"], input[type="number"], select {
-            width: calc(100% - 22px);
+        input[type="text"], input[type="time"], input[type="number"], select, .flatpickr-input {
+            width: calc(100% - 22px); /* Ajuste o padding e a largura do campo */
             padding: 10px;
             margin: 5px 0 20px 0;
             display: inline-block;
@@ -110,7 +110,7 @@
             margin-right: 10px;
         }
         .break-line {
-            margin: 10px 0; /* Espaçamento antes e depois da quebra de linha */
+            margin: 0px 0; /* Espaçamento antes e depois da quebra de linha */
         }
     </style>
 </head>
@@ -249,7 +249,6 @@
                         alert('Dados enviados com sucesso!');
                         form.reset();
                         flatpickr("#colA", {
-                            dateFormat: "d/m/Y",
                             defaultDate: new Date()
                         });
                         document.getElementById('colC').value = new Date().toTimeString().split(' ')[0].slice(0, 5);
